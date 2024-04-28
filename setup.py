@@ -4,8 +4,6 @@
 import os
 from setuptools import setup, find_packages
 
-from src.wireviz import __version__, CMD_NAME, APP_URL
-
 # Utility function to read the README file.
 def read(fname):
     return open(os.path.join(os.path.dirname(__file__), fname)).read()
