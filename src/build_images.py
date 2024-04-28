@@ -13,7 +13,7 @@ from wireviz import wireviz, __version__, APP_NAME
 from wv_helper import open_file_write, open_file_read, open_file_append
 
 
-dir = script_path.parent.parent.parent
+dir = script_path.parent.parent
 readme = 'readme.md'
 groups = {
     'generic' : {
