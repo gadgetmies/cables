@@ -28,5 +28,4 @@ jobs:
         with:
           name: examples-and-tutorials
           path: |
-            examples/
-            tutorial/
+            generic/
