@@ -9,7 +9,7 @@ def read(fname):
     return open(os.path.join(os.path.dirname(__file__), fname)).read()
 
 setup(
-    name=CMD_NAME,
+    name='cables',
     version=__version__,
     author='Gadgetmies',
     #author_email='',
