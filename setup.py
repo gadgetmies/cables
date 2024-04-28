@@ -24,7 +24,6 @@ setup(
         ],
     license='GPLv3',
     keywords='cable connector hardware harness wiring wiring-diagram wiring-harness',
-    url=APP_URL,
     entry_points={
         },
     classifiers=[
