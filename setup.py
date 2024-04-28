@@ -10,7 +10,7 @@ def read(fname):
 
 setup(
     name='cables',
-    version=__version__,
+    version='0.0.1',
     author='Gadgetmies',
     #author_email='',
     description='Definitions for misc cables',
