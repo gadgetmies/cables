@@ -2,16 +2,21 @@
 
 from __future__ import annotations
 
+import base64
 import contextlib
+import copy
+import dataclasses
 import io
+from collections import Counter
 from dataclasses import dataclass, field
 from pathlib import Path
-from typing import Iterable, List, Optional, Sequence
+from typing import Dict, Iterable, List, Optional, Sequence
 
 from . import reports
 from .checks import ERROR, WARNING, Finding, run_checks
+from .faces import Face, to_png
 from .loader import HarnessError, load
-from .model import Model, build_model
+from .model import Model, build_model, parse_harness
 
 SKIP_DIRS = {"library", "build", ".git", "node_modules", "__pycache__"}
 
@@ -71,9 +76,14 @@ def render(result: Result, out_dir: Path, formats: Sequence[str] = ("svg", "png"
     stem = result.source.stem
     base = target / stem
     fmt = tuple(dict.fromkeys(("svg",) + tuple(f for f in formats if f in ("png", "svg", "gv"))))
+    faces = {name: model.face(name) for name in model.harness.connectors}
+    faces = {name: f for name, f in faces.items() if f is not None}
+    harness = _harness_with_faces(model, faces, target / f"{stem}.faces") if faces else model.harness
     with contextlib.redirect_stdout(io.StringIO()):  # WireViz prints repeated warnings
-        model.harness.output(filename=base, fmt=fmt + ("tsv",), view=False)
-    svg = (target / f"{stem}.svg").read_text(encoding="utf-8")
+        harness.output(filename=base, fmt=fmt + ("tsv",), view=False)
+    svg_path = target / f"{stem}.svg"
+    svg = _vectorise_faces(svg_path.read_text(encoding="utf-8"), target / f"{stem}.faces", faces)
+    svg_path.write_text(svg, encoding="utf-8")
 
     files = {}
     for label, suffix, content in (
@@ -93,8 +103,49 @@ def render(result: Result, out_dir: Path, formats: Sequence[str] = ("svg", "png"
     (target / result.source.name).write_bytes(result.source.read_bytes())
 
     drawing = target / f"{stem}.html"
-    drawing.write_text(reports.drawing_html(model, svg, result.findings, files), encoding="utf-8")
+    drawing.write_text(reports.drawing_html(model, svg, result.findings, files, faces), encoding="utf-8")
     result.outputs.append(drawing)
+
+
+def _harness_with_faces(model: Model, faces: Dict[str, Face], face_dir: Path):
+    """Re-parse the harness with each connector's face drawing as its image.
+
+    Graphviz cannot load SVG images, so it gets a PNG rendering of each face;
+    _vectorise_faces() swaps them back for the SVG afterwards. Without
+    cairosvg the diagram has no faces (the drawing page still shows them).
+    """
+    face_dir.mkdir(parents=True, exist_ok=True)
+    data = copy.deepcopy(model.loaded.data)
+    instances = Counter(model.loaded.instance_templates.values())
+    added = False
+    for name, face in faces.items():
+        # Template definitions used several times share one image, so only
+        # connectors that are their own single instance get a coloured face.
+        if name not in data["connectors"] or instances.get(name, 0) != 1:
+            continue
+        png = face_dir / f"{name}.png"
+        if not to_png(face, png):
+            break
+        data["connectors"][name]["image"] = {
+            "src": str(png.resolve()),
+            "width": face.width,
+            "height": face.height,
+        }
+        added = True
+    if not added:
+        return model.harness
+    loaded = dataclasses.replace(model.loaded, data=data)
+    harness, _ = parse_harness(loaded)
+    return harness
+
+
+def _vectorise_faces(svg: str, face_dir: Path, faces: Dict[str, Face]) -> str:
+    for name, face in faces.items():
+        png = face_dir / f"{name}.png"
+        if png.is_file():
+            b64 = base64.b64encode(png.read_bytes()).decode("ascii")
+            svg = svg.replace(f"data:image/png;base64, {b64}", face.data_uri())
+    return svg
 
 
 def write_index(results: List[Result], out_dir: Path) -> Path:

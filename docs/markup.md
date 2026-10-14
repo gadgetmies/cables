@@ -63,6 +63,37 @@ Additions:
 | `use: library.entry` | Start from a library entry. Your own attributes override it, and lists are replaced, not merged |
 | `wire_awg: [30, 26]` | The wire range the contacts accept, in AWG, either order. Wires outside it fail check `G001`. Library entries set it from the contact datasheet |
 | `source` | Where the pinout comes from. Shown under the pinout table. Library entries fill it in |
+| `face` | Draws the connector's mating face, see below. Library entries set it; `face: false` turns it off |
+
+### Connector face drawings
+
+With a `face` spec, the connector gets a schematic drawing of its mating
+face. It appears in the diagram node and next to the pinout table. The
+drawing shows the housing outline and polarisation (latch, D-shell, XT
+chamfer), every cavity with its pin number and signal name, and the colour
+of the wire in it. Unused cavities are crossed out. The drawings are not to
+scale.
+
+```yaml
+face:
+  style: row        # row (single-row crimp housing), dsub or xt
+  gender: female    # female: sockets, male: pins
+  latch: true       # row: draw a latch on top
+  pin1: left        # row: pin 1 on the left or right of the drawn view
+  view: mating face # caption text
+  rows: [5, 4]      # dsub: contacts per row, top row first (default from pin count)
+```
+
+D-sub numbering follows the standard: on a male mating face, pin 1 is top
+left, and the female face is the mirror image. For XT connectors, the square
+end is `+` and the chamfered end is `-`, which is the usual convention, and
+the contacts are labelled too. For `row` housings, the side pin 1 sits on
+relative to the latch depends on the part, so compare with the datasheet
+drawing and set `pin1` if needed.
+
+The diagram needs `cairosvg` (installed with this package) and the cairo
+library, which Graphviz installs. Without them, the faces still appear on
+the drawing page.
 
 ## Cables and wires
 

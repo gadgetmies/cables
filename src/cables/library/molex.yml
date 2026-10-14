@@ -8,6 +8,7 @@ connectors:
     subtype: 2.54 mm pitch, crimp housing
     manufacturer: Molex
     wire_awg: [30, 22]  # 08-50-0114 terminal
+    face: {style: row, gender: female}
     additional_components:
       - type: Crimp terminal, KK 254
         manufacturer: Molex

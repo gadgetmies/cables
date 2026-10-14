@@ -12,32 +12,38 @@ connectors:
   xt30_male:
     <<: *xt
     type: XT30 male (plug pins)
+    face: {style: xt, gender: male}
     mpn: XT30U-M
     wire_awg: [20, 16]
   xt30_female:
     <<: *xt
     type: XT30 female (sockets)
+    face: {style: xt, gender: female}
     mpn: XT30U-F
     wire_awg: [20, 16]
 
   xt60_male:
     <<: *xt
     type: XT60 male (plug pins)
+    face: {style: xt, gender: male}
     mpn: XT60H-M
     wire_awg: [14, 12]
   xt60_female:
     <<: *xt
     type: XT60 female (sockets)
+    face: {style: xt, gender: female}
     mpn: XT60H-F
     wire_awg: [14, 12]
 
   xt90_male:
     <<: *xt
     type: XT90 male (plug pins)
+    face: {style: xt, gender: male}
     mpn: XT90H-M
     wire_awg: [10, 8]
   xt90_female:
     <<: *xt
     type: XT90 female (sockets)
+    face: {style: xt, gender: female}
     mpn: XT90H-F
     wire_awg: [10, 8]

@@ -17,7 +17,14 @@ def test_build_examples(root, tmp_path):
         assert (d / f"telem_sik_radio{suffix}").is_file(), suffix
     rows = list(csv.DictReader(open(d / "telem_sik_radio.wirelist.csv", encoding="utf-8")))
     assert rows[1]["From"] == "FC:2" and rows[1]["To signal"] == "RX (IN)"
+    try:
+        import cairosvg  # noqa: F401
+        svg = (d / "telem_sik_radio.svg").read_text(encoding="utf-8")
+        assert svg.count("data:image/svg+xml") == 2  # both connector faces, as vectors
+    except (ImportError, OSError):
+        pass
     html = (d / "can_extension.html").read_text(encoding="utf-8")
+    assert '<figure class="face">' in html
     assert "<svg" in html and "IPC/WHMA-A-620, Class 2" in html and "twist wire pairs 2+3" in html
 
 
@@ -35,3 +42,13 @@ def test_check_exit_codes(tmp_path, capsys):
 def test_library_listing(capsys):
     assert main(["library", "pixhawk"]) == 0
     assert "pixhawk.telem" in capsys.readouterr().out
+
+
+def test_build_without_cairosvg(root, tmp_path, monkeypatch):
+    import cables.build
+
+    monkeypatch.setattr(cables.build, "to_png", lambda face, path: False)
+    out = tmp_path / "out"
+    assert main(["build", str(root / "harnesses" / "drone" / "can_extension.yml"), "-o", str(out)]) == 0
+    assert "data:image" not in (out / "drone" / "can_extension.svg").read_text(encoding="utf-8")
+    assert '<figure class="face">' in (out / "drone" / "can_extension.html").read_text(encoding="utf-8")

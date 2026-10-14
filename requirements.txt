@@ -1,3 +1,4 @@
+cairosvg
 graphviz
 pillow
 pyyaml

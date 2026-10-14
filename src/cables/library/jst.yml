@@ -8,6 +8,7 @@ connectors:
     subtype: 1.25 mm pitch, female housing
     manufacturer: JST
     wire_awg: [30, 26]  # SSHL-002T-P0.2 contact
+    face: {style: row, gender: female, latch: true}
     additional_components:
       - type: Crimp contact, JST GH
         manufacturer: JST
@@ -18,6 +19,7 @@ connectors:
     subtype: 1.0 mm pitch, female housing
     manufacturer: JST
     wire_awg: [32, 28]  # SSH-003T-P0.2-H contact
+    face: {style: row, gender: female}
     additional_components:
       - type: Crimp contact, JST SH
         manufacturer: JST

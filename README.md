@@ -2,7 +2,9 @@
 
 Describe cables, such as drone wiring, in YAML. This repository then:
 
-- **draws** them: wiring diagrams via [WireViz](https://github.com/wireviz/WireViz)
+- **draws** them: wiring diagrams via [WireViz](https://github.com/wireviz/WireViz),
+  plus a schematic drawing of each connector's mating face showing which wire
+  colour goes in which cavity
 - **checks** them: crossed serial lines, VCC shorted to GND, swapped I²C or
   CAN, wire too thick for the crimp contact, untwisted CAN pairs, and missing
   information needed to order
@@ -46,7 +48,7 @@ For each `harnesses/<group>/<name>.yml`, `cables build` writes these files to
 
 | File | Contents |
 |---|---|
-| `<name>.html` | Manufacturing drawing: title block, diagram, notes, wire list, pinouts per connector, BOM and check results. Prints on A3 landscape |
+| `<name>.html` | Manufacturing drawing: title block, diagram, notes, wire list, pinouts with a drawing of each connector face, BOM and check results. Prints on A3 landscape |
 | `<name>.svg`, `.png` | Diagram |
 | `<name>.wirelist.csv` | From-to list: wire, colour, gauge, length, from and to pins with signal names, twisted pairs |
 | `<name>.netlist.csv` | Contacts per net, for continuity testing |

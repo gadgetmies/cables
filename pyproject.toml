@@ -16,6 +16,7 @@ dependencies = [
     "pyyaml",
     "pillow",
     "graphviz",
+    "cairosvg",  # connector face drawings in diagrams; needs the cairo library
 ]
 classifiers = [
     "Development Status :: 4 - Beta",

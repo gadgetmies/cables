@@ -7,10 +7,12 @@ connectors:
     type: D-Sub DE-9
     subtype: female, solder cup
     pincount: 9
+    face: {style: dsub, gender: female}
   de9_male:
     type: D-Sub DE-9
     subtype: male, solder cup
     pincount: 9
+    face: {style: dsub, gender: male}
   de9_rs232_dte_female:
     use: de9_female
     pinlabels: [DCD, RXD, TXD, DTR, GND, DSR, RTS, CTS, RI]

@@ -14,6 +14,7 @@ from wireviz.Harness import Harness
 from wireviz.wv_colors import translate_color
 
 from . import gauge as g
+from .faces import Cavity, Face, draw
 from .loader import HarnessError, LoadedHarness
 
 
@@ -104,6 +105,22 @@ class Model:
 
     def wires_at(self, connector: str, pin) -> List[Wire]:
         return [w for w in self.wires if any(e.connector == connector and e.pin == pin for e in w.left + w.right)]
+
+    def cavities(self, connector: str) -> List[Cavity]:
+        """Pins of a connector with signal names and the colours of the wires in them."""
+        c = self.harness.connectors[connector]
+        out = []
+        for i, pin in enumerate(c.pins):
+            label = c.pinlabels[i] if i < len(c.pinlabels) and c.pinlabels[i] is not None else ""
+            colors = [w.color or "" for w in self.wires_at(connector, pin)]
+            out.append(Cavity(pin=pin, label=str(label), colors=colors))
+        return out
+
+    def face(self, connector: str) -> Optional[Face]:
+        """Mating face drawing for a connector, or None when it has no face spec."""
+        spec = self.loaded.connector_extras(connector).face
+        uid = "".join(ch for ch in connector if ch.isalnum()) or "c"
+        return draw(self.cavities(connector), spec, uid=uid)
 
 
 def pin_label(harness: Harness, connector: str, pin) -> str:

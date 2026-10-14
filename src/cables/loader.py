@@ -19,7 +19,7 @@ BUILTIN_LIBRARY = Path(__file__).parent / "library"
 
 # Keys we add on top of WireViz are removed before WireViz sees the data:
 #   top level:  manufacturing
-#   connectors: use, wire_awg, source
+#   connectors: use, wire_awg, face, source
 #   cables:     use, twisted, source
 LIBRARY_ONLY_KEYS = ("library", "description", "source")
 
@@ -33,6 +33,7 @@ class ComponentExtras:
     use: Optional[str] = None
     source: Optional[str] = None
     wire_awg: Optional[List[Any]] = None  # connectors: accepted wire range
+    face: Optional[Dict[str, Any]] = None  # connectors: mating face drawing spec
     twisted: List[List[Any]] = field(default_factory=list)  # cables: wire pairs
 
 
@@ -167,6 +168,13 @@ def _split_component(name: str, attrs: Any, section: str, library: Library) -> T
         if not isinstance(rng, list) or len(rng) != 2:
             raise HarnessError(f'connector "{name}": wire_awg must be [min, max], e.g. [30, 26]')
         extras.wire_awg = rng
+    if "face" in attrs:
+        if section != "connectors":
+            raise HarnessError(f'cable "{name}": face is only valid for connectors')
+        face = attrs.pop("face")
+        if face not in (None, False) and not isinstance(face, dict):
+            raise HarnessError(f'connector "{name}": face must be a mapping (e.g. {{style: row}}) or false')
+        extras.face = face or None
     if "twisted" in attrs:
         if section != "cables":
             raise HarnessError(f'connector "{name}": twisted is only valid for cables')
