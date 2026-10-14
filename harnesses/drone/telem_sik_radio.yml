@@ -1,0 +1,34 @@
+# Flight controller TELEM1 to a SiK telemetry radio.
+# DS-009: serial cables are 1:1, the peripheral crosses TX/RX and CTS/RTS.
+metadata:
+  title: TELEM1 to SiK telemetry radio
+  pn: CBL-UAV-001
+  revision: A
+  author: Gadgetmies
+  description: 6-way JST GH, 1:1, 150 mm. Hardware flow control wired.
+
+manufacturing:
+  ipc_class: 2
+  length_tolerance: ±5 mm
+  tests:
+    - 100% continuity and short test against the netlist
+  compliance: [RoHS]
+
+connectors:
+  FC:
+    use: pixhawk.telem
+    notes: Autopilot TELEM1
+  RADIO:
+    use: pixhawk.telem_peripheral
+    notes: SiK radio serial port
+
+cables:
+  W1:
+    use: wire.ul1571_28awg
+    length: 150 mm
+    colors: [RD, BK, BK, BK, BK, BK]  # DS-009: pin 1 red, others black
+
+connections:
+  - - FC: [1-6]
+    - W1: [1-6]
+    - RADIO: [1-6]

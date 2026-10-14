@@ -1,0 +1,32 @@
+# Autopilot GPS1 ("GPS & Safety") port to a GPS module with safety switch,
+# LED and buzzer, both following the 10-way DS-009 pinout.
+metadata:
+  title: GPS1 to GPS module (10-way)
+  pn: CBL-UAV-004
+  revision: A
+  author: Gadgetmies
+  description: 10-way JST GH, 1:1, 250 mm.
+
+manufacturing:
+  ipc_class: 2
+  length_tolerance: ±5 mm
+  tests:
+    - 100% continuity and short test against the netlist
+
+connectors:
+  FC:
+    use: pixhawk.gps_full
+    notes: Autopilot GPS1
+  GPS:
+    use: pixhawk.gps_full_peripheral
+
+cables:
+  W1:
+    use: wire.ul1571_28awg
+    length: 250 mm
+    colors: [RD, BK, BK, BK, BK, BK, BK, BK, BK, BK]
+
+connections:
+  - - FC: [1-10]
+    - W1: [1-10]
+    - GPS: [1-10]

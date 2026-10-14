@@ -1,0 +1,19 @@
+library: audio
+description: Jack plugs (TS/TRS/TRRS). Generic entries; add the mpn of the part you buy.
+source: Generic jack plug; contacts counted from the tip (tip, ring(s), sleeve).
+
+connectors:
+  trs_plug: &trs
+    type: TRS plug
+    subtype: specify 2.5 mm or 3.5 mm
+    pins: [T, R, S]
+    pinlabels: [TIP, RING, SLEEVE]
+    face: {style: trs, gender: male}
+  trs_plug_2_5mm: {<<: *trs, subtype: 2.5 mm}
+  trs_plug_3_5mm: {<<: *trs, subtype: 3.5 mm}
+  trrs_plug_3_5mm:
+    <<: *trs
+    type: TRRS plug
+    subtype: 3.5 mm
+    pins: [T, R1, R2, S]
+    pinlabels: [TIP, RING 1, RING 2, SLEEVE]

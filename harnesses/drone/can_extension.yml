@@ -1,0 +1,34 @@
+# DroneCAN / UAVCAN v0 bus extension between two Pixhawk-standard CAN ports.
+metadata:
+  title: CAN bus extension
+  pn: CBL-UAV-002
+  revision: A
+  author: Gadgetmies
+  description: 4-way JST GH, 1:1, 300 mm, CAN pair twisted as required by DS-009.
+
+manufacturing:
+  ipc_class: 2
+  length_tolerance: ±10 mm
+  twist_rate: approx. 1 twist per 10 mm
+  tests:
+    - 100% continuity and short test against the netlist
+  labels:
+    - Heat-shrink label "CAN" 20 mm from each connector
+
+connectors:
+  A:
+    use: pixhawk.can
+  B:
+    use: pixhawk.can
+
+cables:
+  W1:
+    use: wire.ul1571_28awg
+    length: 300 mm
+    colors: [RD, BK, BK, BK]
+    twisted: [[2, 3]]
+
+connections:
+  - - A: [1-4]
+    - W1: [1-4]
+    - B: [1-4]

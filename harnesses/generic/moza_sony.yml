@@ -1,0 +1,33 @@
+# USB-C plug to TRS jack plug.
+# A3+B3 (TX1-/TX2-) are bridged in the USB-C plug and go to the tip,
+# A10+B10 (RX2-/RX1-) are bridged and go to the ring, and the cable shield
+# joins the USB-C shell to the TRS sleeve.
+metadata:
+  title: Moza Slypod to Sony A7 III cable
+  description: USB-C plug to TRS plug, shielded 2-core.
+
+manufacturing:
+  length_tolerance: ±10 mm
+  notes:
+    - Bridge A3 to B3 and A10 to B10 inside the USB-C plug.
+
+connectors:
+  USB:
+    use: usb.usbc_plug
+    loops: [[A3, B3], [A10, B10]]
+  TRS:
+    use: audio.trs_plug
+
+cables:
+  W1:
+    type: Shielded 2-core cable
+    gauge: 28 AWG
+    length: 0.2 m
+    colors: [WH, RD]
+    shield: true
+
+connections:
+  -
+    - USB: [A3, A10, SHELL]
+    - W1: [1, 2, s]
+    - TRS: [T, R, S]

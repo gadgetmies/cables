@@ -1,0 +1,54 @@
+library: pixhawk
+description: >
+  Ports of the Pixhawk Connector Standard. Autopilot-side entries carry the
+  autopilot's pin names. Cables are wired 1:1 and the peripheral crosses
+  TX/RX and CTS/RTS on its own board, so the *_peripheral entries carry the
+  peripheral's pin names; that lets the checks catch a crossed cable.
+  DS-009 marks pin 1 with a red wire and all other wires black.
+source: Pixhawk Connector Standard DS-009 v0.1.0 (github.com/pixhawk/Pixhawk-Standards)
+
+connectors:
+  telem:
+    use: jst.gh6
+    pinlabels: [VCC, TX (OUT), RX (IN), CTS (IN), RTS (OUT), GND]
+  telem_peripheral:
+    use: jst.gh6
+    pinlabels: [VCC, RX (IN), TX (OUT), RTS (OUT), CTS (IN), GND]
+
+  gps_full:  # GPS1 / "GPS & Safety" port
+    use: jst.gh10
+    pinlabels: [VCC, TX (OUT), RX (IN), SCL, SDA, SAFETY SWITCH, SAFETY LED, VDD_3V3, BUZZER, GND]
+  gps_full_peripheral:
+    use: jst.gh10
+    pinlabels: [VCC, RX (IN), TX (OUT), SCL, SDA, SAFETY SWITCH, SAFETY LED, VDD_3V3, BUZZER, GND]
+
+  gps_basic:
+    use: jst.gh6
+    pinlabels: [VCC, TX (OUT), RX (IN), SCL, SDA, GND]
+  gps_basic_peripheral:
+    use: jst.gh6
+    pinlabels: [VCC, RX (IN), TX (OUT), SCL, SDA, GND]
+
+  can:  # same pinout on both ends; DS-009 asks for CAN_H/CAN_L to be twisted
+    use: jst.gh4
+    pinlabels: [VCC, CAN_H, CAN_L, GND]
+
+  i2c:  # 1.5 kOhm pull-ups on the autopilot
+    use: jst.gh4
+    pinlabels: [VCC, SCL, SDA, GND]
+
+  spi:
+    use: jst.gh7
+    pinlabels: [VCC, SPI_EXT_SCK, SPI_EXT_MISO, SPI_EXT_MOSI, "!SPI_SS1", "!SPI_SS2", GND]
+
+  power_analog:  # VCC pins must carry >= 2.5 A continuous
+    use: jst.gh6
+    pinlabels: [VCC, VCC, CURRENT, VOLTAGE, GND, GND]
+
+  debug_full:  # JST SH, not GH
+    use: jst.sh10
+    pinlabels: [TARGET VOLTAGE, CONSOLE TX (OUT), CONSOLE RX (IN), SWDIO, SWCLK, SWO, TRACE, TRACE, TRACE, GND]
+
+  debug_mini:  # JST SH, not GH
+    use: jst.sh6
+    pinlabels: [TARGET VOLTAGE, CONSOLE TX (OUT), CONSOLE RX (IN), SWDIO, SWCLK, GND]

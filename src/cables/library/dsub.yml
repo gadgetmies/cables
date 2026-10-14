@@ -1,0 +1,21 @@
+library: dsub
+description: D-subminiature connectors. Generic entries; add the mpn of the part you buy.
+source: Pin names per TIA-574 (RS-232 on DE-9, DTE side).
+
+connectors:
+  de9_female:
+    type: D-Sub DE-9
+    subtype: female, solder cup
+    pincount: 9
+    face: {style: dsub, gender: female}
+  de9_male:
+    type: D-Sub DE-9
+    subtype: male, solder cup
+    pincount: 9
+    face: {style: dsub, gender: male}
+  de9_rs232_dte_female:
+    use: de9_female
+    pinlabels: [DCD, RXD, TXD, DTR, GND, DSR, RTS, CTS, RI]
+  de9_rs232_dte_male:
+    use: de9_male
+    pinlabels: [DCD, RXD, TXD, DTR, GND, DSR, RTS, CTS, RI]

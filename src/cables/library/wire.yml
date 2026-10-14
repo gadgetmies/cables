@@ -1,0 +1,19 @@
+library: wire
+description: >
+  Wire types commonly used in small UAV harnesses. These set type and gauge
+  only; add colors/wirecount (and mpn once you pick a supplier) in the
+  harness. category bundle means loose wires without a common jacket.
+
+cables:
+  ul1571_30awg: {type: UL1571 PVC hook-up wire, gauge: 30 AWG, category: bundle}
+  ul1571_28awg: {type: UL1571 PVC hook-up wire, gauge: 28 AWG, category: bundle}
+  ul1007_26awg: {type: UL1007 PVC hook-up wire, gauge: 26 AWG, category: bundle}
+  ul1007_24awg: {type: UL1007 PVC hook-up wire, gauge: 24 AWG, category: bundle}
+  ul1007_22awg: {type: UL1007 PVC hook-up wire, gauge: 22 AWG, category: bundle}
+  ul10064_28awg: {type: UL10064 FEP wire, gauge: 28 AWG, category: bundle}
+  silicone_20awg: {type: Silicone high-strand wire, gauge: 20 AWG, category: bundle}
+  silicone_18awg: {type: Silicone high-strand wire, gauge: 18 AWG, category: bundle}
+  silicone_16awg: {type: Silicone high-strand wire, gauge: 16 AWG, category: bundle}
+  silicone_14awg: {type: Silicone high-strand wire, gauge: 14 AWG, category: bundle}
+  silicone_12awg: {type: Silicone high-strand wire, gauge: 12 AWG, category: bundle}
+  silicone_10awg: {type: Silicone high-strand wire, gauge: 10 AWG, category: bundle}

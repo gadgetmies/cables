@@ -1,5 +1,5 @@
+cairosvg
 graphviz
 pillow
 pyyaml
-setuptools
-wireviz
+wireviz==0.4.1
