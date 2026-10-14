@@ -113,7 +113,19 @@ class Model:
         for i, pin in enumerate(c.pins):
             label = c.pinlabels[i] if i < len(c.pinlabels) and c.pinlabels[i] is not None else ""
             colors = [w.color or "" for w in self.wires_at(connector, pin)]
-            out.append(Cavity(pin=pin, label=str(label), colors=colors))
+            bridged = [e.pin for e in self.jumpers_at(connector, pin) if e.connector == connector]
+            out.append(Cavity(pin=pin, label=str(label), colors=colors, bridged=bridged))
+        return out
+
+    def jumpers_at(self, connector: str, pin) -> List[End]:
+        """Contacts joined to this one by a loop or a mate, not by a wire."""
+        out = []
+        for net in self.nets:
+            for a, b, _ in net.jumpers:
+                if (a.connector, a.pin) == (connector, pin):
+                    out.append(b)
+                elif (b.connector, b.pin) == (connector, pin):
+                    out.append(a)
         return out
 
     def face(self, connector: str) -> Optional[Face]:

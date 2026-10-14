@@ -78,7 +78,8 @@ def render(result: Result, out_dir: Path, formats: Sequence[str] = ("svg", "png"
     fmt = tuple(dict.fromkeys(("svg",) + tuple(f for f in formats if f in ("png", "svg", "gv"))))
     faces = {name: model.face(name) for name in model.harness.connectors}
     faces = {name: f for name, f in faces.items() if f is not None}
-    harness = _harness_with_faces(model, faces, target / f"{stem}.faces") if faces else model.harness
+    harness = _harness_with_faces(model, faces, target / f"{stem}.faces") if faces else None
+    harness = _fix_loop_ports(harness or copy.deepcopy(model.harness))
     with contextlib.redirect_stdout(io.StringIO()):  # WireViz prints repeated warnings
         harness.output(filename=base, fmt=fmt + ("tsv",), view=False)
     svg_path = target / f"{stem}.svg"
@@ -107,6 +108,15 @@ def render(result: Result, out_dir: Path, formats: Sequence[str] = ("svg", "png"
     result.outputs.append(drawing)
 
 
+def _fix_loop_ports(harness):
+    """Work around WireViz 0.4.1 drawing loops to port p<pin name> while
+    ports are numbered p<pin index>; loops on pins named e.g. A3 vanish.
+    Only call this on a harness used for rendering, not for the model."""
+    for c in harness.connectors.values():
+        c.loops = [[c.pins.index(p) + 1 for p in loop] for loop in c.loops]
+    return harness
+
+
 def _harness_with_faces(model: Model, faces: Dict[str, Face], face_dir: Path):
     """Re-parse the harness with each connector's face drawing as its image.
 
@@ -133,7 +143,7 @@ def _harness_with_faces(model: Model, faces: Dict[str, Face], face_dir: Path):
         }
         added = True
     if not added:
-        return model.harness
+        return None
     loaded = dataclasses.replace(model.loaded, data=data)
     harness, _ = parse_harness(loaded)
     return harness

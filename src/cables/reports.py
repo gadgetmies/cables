@@ -169,8 +169,15 @@ def _pinout_tables(model: Model, faces: Dict[str, Any]) -> str:
         for i, pin in enumerate(c.pins):
             label = c.pinlabels[i] if i < len(c.pinlabels) and c.pinlabels[i] is not None else ""
             wires = model.wires_at(name, pin)
+            for j in model.jumpers_at(name, pin):
+                # Bridged/mated contact: show where the joined contact leads.
+                via = [f"{e.name} {e.label}".strip() for w in model.wires_at(j.connector, j.pin)
+                       for e in w.left + w.right if (e.connector, e.pin) != (j.connector, j.pin)]
+                goes = f"{j.name} {j.label}".strip() + (" \u2192 " + ", ".join(via) if via else "")
+                rows.append([_e(pin), _e(label), "bridge", "", "", _e(goes)])
             if not wires:
-                rows.append([_e(pin), _e(label), "", "", "", '<span class="muted">not connected</span>'])
+                if not model.jumpers_at(name, pin):
+                    rows.append([_e(pin), _e(label), "", "", "", '<span class="muted">not connected</span>'])
                 continue
             for w in wires:
                 others = [e for e in w.left + w.right if not (e.connector == name and e.pin == pin)]

@@ -6,7 +6,7 @@ cavity with its pin number and signal name, and the colour of the wire
 crimped into it. Drawings are schematic: proportions are not to scale.
 
 face:
-  style: row | dsub | xt      # single-row crimp housing, D-sub, Amass XT
+  style: row | dsub | xt | usbc | trs   # crimp housing, D-sub, Amass XT, USB-C, jack plug
   gender: female | male       # sockets (rings) or pins (filled)
   latch: true                 # row: draw a latch on top
   pin1: left | right          # row: pin 1 position in the drawn view
@@ -34,10 +34,15 @@ class Cavity:
     pin: Any
     label: str = ""
     colors: List[str] = field(default_factory=list)  # one entry per wire, WireViz color codes
+    bridged: List[Any] = field(default_factory=list)  # pins of the same connector joined by a loop
 
     @property
     def populated(self) -> bool:
         return bool(self.colors)
+
+    @property
+    def used(self) -> bool:
+        return self.populated or bool(self.bridged)
 
 
 @dataclass
@@ -64,7 +69,7 @@ def _fill_defs(uid: str, colors: Sequence[str]) -> (str, str):
     """Return (defs, fill) painting a wire colour; stripes become a gradient."""
     if not colors:
         return "", "none"
-    hexes = get_color_hex(colors[0]) if colors[0] else ["#ffffff"]
+    hexes = get_color_hex(colors[0]) if colors[0] else ["#9aa3ad"]  # no colour: shield/drain
     if len(hexes) == 1:
         return "", hexes[0]
     stops = []
@@ -85,7 +90,10 @@ def _cavity(uid, cx, cy, r, cav: Cavity, gender: str, shape: str) -> (str, str):
         outer = f'<circle cx="{cx:.1f}" cy="{cy:.1f}" r="{r:.1f}" fill="#fff" stroke="{INK}" stroke-width="1.2"/>'
         inner_r = r * (0.7 if gender == "male" else 0.55)
         inner = f'<circle cx="{cx:.1f}" cy="{cy:.1f}" r="{inner_r:.1f}" fill="{fill}" stroke="{INK}" stroke-width="0.8"/>'
-    if not cav.populated:
+    if not cav.populated and cav.bridged:
+        # No wire of its own, joined to another contact by a bridge or jumper.
+        inner = inner.replace('fill="none"', 'fill="#aeb5bd"').replace(f'stroke="{INK}" stroke-width="0.8"', f'stroke="{INK}" stroke-width="0.8" stroke-dasharray="2 1.5"')
+    elif not cav.populated:
         # Unused cavity: empty, with a cross so it reads as "leave empty".
         d = r * 0.45
         inner = (f'<path d="M{cx - d:.1f},{cy - d:.1f} L{cx + d:.1f},{cy + d:.1f} M{cx + d:.1f},{cy - d:.1f} '
@@ -221,7 +229,99 @@ def draw_xt(cavities: List[Cavity], spec: Dict[str, Any], uid: str) -> Face:
     return _wrap(width, height, defs, "".join(parts), caption)
 
 
-STYLES = {"row": draw_row, "dsub": draw_dsub, "xt": draw_xt}
+def draw_usbc(cavities: List[Cavity], spec: Dict[str, Any], uid: str) -> Face:
+    """USB Type-C mating face: two rows of 12 contacts inside a rounded shell.
+
+    Receptacle front view: A1..A12 left to right on top, B12..B1 below (the
+    layout is rotationally symmetric). A plug faces it, so it is mirrored.
+    """
+    gender = spec.get("gender", "male")
+    by_pin = {str(c.pin): c for c in cavities}
+    step, r = 26, 7
+    a_row = [f"A{i}" for i in range(1, 13)]
+    b_row = [f"B{i}" for i in range(12, 0, -1)]
+    if gender == "male":
+        a_row, b_row = a_row[::-1], b_row[::-1]
+    label_h = 62
+    x0, top = 20, label_h
+    shell_w, shell_h = 11 * step + 2 * r + 36, 2 * r + 46
+    width, height = int(shell_w + 2 * x0), int(top + shell_h + label_h)
+    defs, parts = [], []
+    shell = by_pin.get("SHELL")
+    shell_stroke = 3 if shell is not None and shell.populated else 1.5
+    parts.append(f'<rect x="{x0}" y="{top}" width="{shell_w}" height="{shell_h}" rx="{shell_h / 2:.1f}" '
+                 f'fill="#e3e6e9" stroke="{INK}" stroke-width="{shell_stroke}"/>')
+    if gender == "female":  # receptacle: contacts sit on a central tongue
+        parts.append(f'<rect x="{x0 + 22}" y="{top + shell_h / 2 - r - 9:.1f}" width="{shell_w - 44}" height="{2 * r + 18}" '
+                     f'rx="4" fill="{BODY}" stroke="{INK}" stroke-width="1"/>')
+    rows = ((a_row, top + 14 + r, True), (b_row, top + shell_h - 14 - r, False))
+    for row, y, upper in rows:
+        for i, pin in enumerate(row):
+            cav = by_pin.get(pin, Cavity(pin=pin))
+            cx = x0 + 18 + r + i * step
+            d, b = _cavity(f"{uid}u{pin}", cx, y, r, cav, "female", "square")
+            defs.append(d)
+            parts.append(b)
+            muted = INK if cav.used else "#9aa3ad"
+            num_y = top - 4 if upper else top + shell_h + 12
+            parts.append(_text(cx, num_y, pin, size=9, weight="bold" if cav.used else "normal", fill=muted))
+            if cav.label:
+                if upper:
+                    parts.append(_text(cx + 3, top - 16, cav.label[:9], size=9, anchor="start", rotate=-90, fill=muted))
+                else:
+                    parts.append(_text(cx + 3, top + shell_h + 18, cav.label[:9], size=9, anchor="end", rotate=-90, fill=muted))
+    caption = f'{spec.get("view", "mating face")} · {"plug" if gender == "male" else "receptacle"}'
+    if shell is not None and shell.populated:
+        caption += " · shield on shell"
+    if any(c.bridged and not c.populated for c in cavities):
+        caption += " · grey = bridged"
+    caption += " · schematic"
+    return _wrap(width, height, defs, "".join(parts), caption)
+
+
+def draw_trs(cavities: List[Cavity], spec: Dict[str, Any], uid: str) -> Face:
+    """Jack plug side view: sleeve nearest the handle, tip at the end."""
+    n = len(cavities)
+    seg, ins, h = 46, 7, 26
+    x0, top = 16, 18
+    handle_w = 70
+    body_x = x0 + handle_w
+    width = int(body_x + n * seg + (n - 1) * ins + 28 + x0)
+    height = top + h + 74
+    y_mid = top + h / 2
+    defs, parts = [], []
+    parts.append(f'<rect x="{x0}" y="{top - 8}" width="{handle_w}" height="{h + 16}" rx="6" fill="{BODY}" stroke="{INK}" stroke-width="1.5"/>')
+    parts.append(_text(x0 + handle_w / 2, y_mid + 4, "handle", size=9, fill="#5d6670"))
+    # Contacts from the handle outwards: sleeve, ring(s), tip.
+    order = list(reversed(cavities))
+    x = body_x
+    for i, cav in enumerate(order):
+        is_tip = i == n - 1
+        if is_tip:
+            parts.append(f'<path d="M{x},{top} L{x + seg - 10},{top} Q{x + seg + 18},{y_mid} {x + seg - 10},{top + h} L{x},{top + h} Z" '
+                         f'fill="#d5dade" stroke="{INK}" stroke-width="1.5"/>')
+        else:
+            parts.append(f'<rect x="{x}" y="{top}" width="{seg}" height="{h}" fill="#d5dade" stroke="{INK}" stroke-width="1.5"/>')
+        cx = x + seg / 2
+        if cav.populated:
+            dfs, fill = _fill_defs(f"{uid}t{i}", cav.colors)
+            defs.append(dfs)
+            parts.append(f'<rect x="{cx - 14:.1f}" y="{top + h + 10}" width="28" height="10" fill="{fill}" stroke="{INK}" stroke-width="0.8"/>')
+            parts.append(f'<line x1="{cx:.1f}" y1="{top + h}" x2="{cx:.1f}" y2="{top + h + 10}" stroke="{INK}" stroke-width="0.8"/>')
+        else:
+            parts.append(_text(cx, top + h + 19, "n/c", size=9, fill="#9aa3ad"))
+        parts.append(_text(cx, top + h + 34, cav.pin, size=11, weight="bold"))
+        if cav.label:
+            parts.append(_text(cx, top + h + 47, cav.label, size=9))
+        x += seg
+        if not is_tip:
+            parts.append(f'<rect x="{x}" y="{top + 2}" width="{ins}" height="{h - 4}" fill="{INK}"/>')
+            x += ins
+    caption = f'{spec.get("view", "side view")} · plug · schematic'
+    return _wrap(width, height, defs, "".join(parts), caption)
+
+
+STYLES = {"row": draw_row, "dsub": draw_dsub, "xt": draw_xt, "usbc": draw_usbc, "trs": draw_trs}
 
 
 def draw(cavities: List[Cavity], spec: Optional[Dict[str, Any]], uid: str = "f") -> Optional[Face]:

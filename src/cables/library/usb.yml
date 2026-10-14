@@ -1,0 +1,19 @@
+library: usb
+description: USB Type-C connectors.
+source: USB Type-C Cable and Connector Specification (USB-IF), contact names per receptacle; a plug carries CC only on A5 (VCONN on B5) and has no B6/B7 contacts.
+
+connectors:
+  usbc_plug:
+    type: USB Type-C plug
+    subtype: 24 position, male
+    pins: [A1, A2, A3, A4, A5, A6, A7, A8, A9, A10, A11, A12,
+           B1, B2, B3, B4, B5, B6, B7, B8, B9, B10, B11, B12, SHELL]
+    pinlabels: [GND, TX1+, TX1-, VBUS, CC1, D+, D-, SBU1, VBUS, RX2-, RX2+, GND,
+                GND, TX2+, TX2-, VBUS, CC2, D+, D-, SBU2, VBUS, RX1-, RX1+, GND, SHIELD]
+    hide_disconnected_pins: true
+    face: {style: usbc, gender: male}
+  usbc_receptacle:
+    use: usbc_plug
+    type: USB Type-C receptacle
+    subtype: 24 position, female
+    face: {style: usbc, gender: female}

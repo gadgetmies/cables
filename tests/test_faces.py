@@ -64,3 +64,25 @@ connections:
 def test_face_must_be_mapping():
     with pytest.raises(HarnessError, match="face must be"):
         load("connectors: {A: {pincount: 1, face: row}}")
+
+
+def test_usbc_plug_is_mirror_of_receptacle_and_shows_bridges():
+    m = build_model(load("""
+connectors:
+  USB: {use: usb.usbc_plug, loops: [[A3, B3]]}
+  J: {use: audio.trs_plug}
+cables:
+  W: {colors: [WH], shield: true}
+connections:
+  - [USB: [A3, SHELL], W: [1, s], J: [T, S]]
+"""))
+    cav = {c.pin: c for c in m.cavities("USB")}
+    assert cav["B3"].bridged == ["A3"] and not cav["B3"].populated
+    plug = m.face("USB").svg
+    assert "grey = bridged" in plug and "shield on shell" in plug
+    assert x_of_pin(plug, "A1") > x_of_pin(plug, "A12")  # plug face is mirrored
+    receptacle = draw(m.cavities("USB"), {"style": "usbc", "gender": "female"}).svg
+    assert x_of_pin(receptacle, "A1") < x_of_pin(receptacle, "A12")
+    trs = m.face("J").svg
+    assert "TIP" in trs and "SLEEVE" in trs and "n/c" in trs  # ring unused
+    assert x_of_pin(trs, "T") > x_of_pin(trs, "S")  # tip at the end, sleeve by the handle

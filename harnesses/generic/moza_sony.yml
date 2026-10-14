@@ -1,36 +1,33 @@
-# NOTE: the connectivity below is carried over unchanged from the first draft
-# of this file. It is identical to the WireViz tutorial example (RS-232 DE-9
-# to a 3-way Molex KK) and has not been checked against the Moza Slypod or
-# Sony A7 III documentation. Verify the pinout before building this cable.
+# USB-C plug to TRS jack plug.
+# A3+B3 (TX1-/TX2-) are bridged in the USB-C plug and go to the tip,
+# A10+B10 (RX2-/RX1-) are bridged and go to the ring, and the cable shield
+# joins the USB-C shell to the TRS sleeve.
 metadata:
   title: Moza Slypod to Sony A7 III cable
-  description: DRAFT - pinout unverified, see the note in the source file.
+  description: USB-C plug to TRS plug, shielded 2-core.
 
 manufacturing:
   length_tolerance: ±10 mm
+  notes:
+    - Bridge A3 to B3 and A10 to B10 inside the USB-C plug.
 
 connectors:
-  X1:
-    use: dsub.de9_rs232_dte_female
-  X2:
-    use: molex.kk254_3
-    pinlabels: [GND, RX, TX]
+  USB:
+    use: usb.usbc_plug
+    loops: [[A3, B3], [A10, B10]]
+  TRS:
+    use: audio.trs_plug
 
 cables:
   W1:
-    type: Shielded control cable
-    gauge: 0.25 mm2
-    show_equiv: true
-    length: 0.2
-    color_code: DIN
-    wirecount: 3
+    type: Shielded 2-core cable
+    gauge: 28 AWG
+    length: 0.2 m
+    colors: [WH, RD]
     shield: true
 
 connections:
   -
-    - X1: [5, 2, 3]
-    - W1: [1, 2, 3]
-    - X2: [1, 3, 2]
-  -
-    - X1: 5
-    - W1: s
+    - USB: [A3, A10, SHELL]
+    - W1: [1, 2, s]
+    - TRS: [T, R, S]

@@ -52,3 +52,12 @@ def test_build_without_cairosvg(root, tmp_path, monkeypatch):
     assert main(["build", str(root / "harnesses" / "drone" / "can_extension.yml"), "-o", str(out)]) == 0
     assert "data:image" not in (out / "drone" / "can_extension.svg").read_text(encoding="utf-8")
     assert '<figure class="face">' in (out / "drone" / "can_extension.html").read_text(encoding="utf-8")
+
+
+def test_loops_on_named_pins_are_drawn(root, tmp_path):
+    out = tmp_path / "out"
+    assert main(["build", str(root / "harnesses" / "generic" / "moza_sony.yml"), "-o", str(out), "-f", "svg", "gv"]) == 0
+    gv = (out / "generic" / "moza_sony.gv").read_text(encoding="utf-8")
+    assert "USB:p3r:e -- USB:p15r:e" in gv and "USB:p10r:e -- USB:p22r:e" in gv  # A3-B3, A10-B10
+    html = (out / "generic" / "moza_sony.html").read_text(encoding="utf-8")
+    assert "USB:A3 TX1- \u2192 TRS:T TIP" in html
