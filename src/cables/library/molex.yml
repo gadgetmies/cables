@@ -1,0 +1,20 @@
+library: molex
+description: Molex wire-to-board crimp housings.
+source: Molex KK 254 crimp housing series 2695 and crimp terminal series 2759 (molex.com).
+
+connectors:
+  kk254: &kk254
+    type: Molex KK 254
+    subtype: 2.54 mm pitch, crimp housing
+    manufacturer: Molex
+    wire_awg: [30, 22]  # 08-50-0114 terminal
+    additional_components:
+      - type: Crimp terminal, KK 254
+        manufacturer: Molex
+        mpn: 08-50-0114
+        qty_multiplier: populated
+  kk254_2: {<<: *kk254, pincount: 2, mpn: 22-01-3027}
+  kk254_3: {<<: *kk254, pincount: 3, mpn: 22-01-3037}
+  kk254_4: {<<: *kk254, pincount: 4, mpn: 22-01-3047}
+  kk254_5: {<<: *kk254, pincount: 5, mpn: 22-01-3057}
+  kk254_6: {<<: *kk254, pincount: 6, mpn: 22-01-3067}

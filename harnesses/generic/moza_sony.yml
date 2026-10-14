@@ -1,0 +1,36 @@
+# NOTE: the connectivity below is carried over unchanged from the first draft
+# of this file. It is identical to the WireViz tutorial example (RS-232 DE-9
+# to a 3-way Molex KK) and has not been checked against the Moza Slypod or
+# Sony A7 III documentation. Verify the pinout before building this cable.
+metadata:
+  title: Moza Slypod to Sony A7 III cable
+  description: DRAFT - pinout unverified, see the note in the source file.
+
+manufacturing:
+  length_tolerance: ±10 mm
+
+connectors:
+  X1:
+    use: dsub.de9_rs232_dte_female
+  X2:
+    use: molex.kk254_3
+    pinlabels: [GND, RX, TX]
+
+cables:
+  W1:
+    type: Shielded control cable
+    gauge: 0.25 mm2
+    show_equiv: true
+    length: 0.2
+    color_code: DIN
+    wirecount: 3
+    shield: true
+
+connections:
+  -
+    - X1: [5, 2, 3]
+    - W1: [1, 2, 3]
+    - X2: [1, 3, 2]
+  -
+    - X1: 5
+    - W1: s

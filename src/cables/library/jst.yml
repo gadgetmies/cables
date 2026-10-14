@@ -1,0 +1,137 @@
+library: jst
+description: JST wire-to-board crimp housings commonly used on drones and flight controllers.
+source: JST GH and SH series catalogues (housing GHR-nnV-S / SHR-nnV-S-B, see jst-mfg.com); verify contact AWG range against the current datasheet.
+
+connectors:
+  gh: &gh
+    type: JST GH
+    subtype: 1.25 mm pitch, female housing
+    manufacturer: JST
+    wire_awg: [30, 26]  # SSHL-002T-P0.2 contact
+    additional_components:
+      - type: Crimp contact, JST GH
+        manufacturer: JST
+        mpn: SSHL-002T-P0.2
+        qty_multiplier: populated
+  sh: &sh
+    type: JST SH
+    subtype: 1.0 mm pitch, female housing
+    manufacturer: JST
+    wire_awg: [32, 28]  # SSH-003T-P0.2-H contact
+    additional_components:
+      - type: Crimp contact, JST SH
+        manufacturer: JST
+        mpn: SSH-003T-P0.2-H
+        qty_multiplier: populated
+  gh2:
+    <<: *gh
+    pincount: 2
+    mpn: GHR-02V-S
+  gh3:
+    <<: *gh
+    pincount: 3
+    mpn: GHR-03V-S
+  gh4:
+    <<: *gh
+    pincount: 4
+    mpn: GHR-04V-S
+  gh5:
+    <<: *gh
+    pincount: 5
+    mpn: GHR-05V-S
+  gh6:
+    <<: *gh
+    pincount: 6
+    mpn: GHR-06V-S
+  gh7:
+    <<: *gh
+    pincount: 7
+    mpn: GHR-07V-S
+  gh8:
+    <<: *gh
+    pincount: 8
+    mpn: GHR-08V-S
+  gh9:
+    <<: *gh
+    pincount: 9
+    mpn: GHR-09V-S
+  gh10:
+    <<: *gh
+    pincount: 10
+    mpn: GHR-10V-S
+  gh11:
+    <<: *gh
+    pincount: 11
+    mpn: GHR-11V-S
+  gh12:
+    <<: *gh
+    pincount: 12
+    mpn: GHR-12V-S
+  gh13:
+    <<: *gh
+    pincount: 13
+    mpn: GHR-13V-S
+  gh14:
+    <<: *gh
+    pincount: 14
+    mpn: GHR-14V-S
+  gh15:
+    <<: *gh
+    pincount: 15
+    mpn: GHR-15V-S
+  sh2:
+    <<: *sh
+    pincount: 2
+    mpn: SHR-02V-S-B
+  sh3:
+    <<: *sh
+    pincount: 3
+    mpn: SHR-03V-S-B
+  sh4:
+    <<: *sh
+    pincount: 4
+    mpn: SHR-04V-S-B
+  sh5:
+    <<: *sh
+    pincount: 5
+    mpn: SHR-05V-S-B
+  sh6:
+    <<: *sh
+    pincount: 6
+    mpn: SHR-06V-S-B
+  sh7:
+    <<: *sh
+    pincount: 7
+    mpn: SHR-07V-S-B
+  sh8:
+    <<: *sh
+    pincount: 8
+    mpn: SHR-08V-S-B
+  sh9:
+    <<: *sh
+    pincount: 9
+    mpn: SHR-09V-S-B
+  sh10:
+    <<: *sh
+    pincount: 10
+    mpn: SHR-10V-S-B
+  sh11:
+    <<: *sh
+    pincount: 11
+    mpn: SHR-11V-S-B
+  sh12:
+    <<: *sh
+    pincount: 12
+    mpn: SHR-12V-S-B
+  sh13:
+    <<: *sh
+    pincount: 13
+    mpn: SHR-13V-S-B
+  sh14:
+    <<: *sh
+    pincount: 14
+    mpn: SHR-14V-S-B
+  sh15:
+    <<: *sh
+    pincount: 15
+    mpn: SHR-15V-S-B

@@ -1,0 +1,36 @@
+# Battery lead: XT60 male to bare ends for soldering to a power distribution board.
+metadata:
+  title: Battery lead XT60 to PDB
+  pn: CBL-UAV-003
+  revision: A
+  author: Gadgetmies
+  description: 12 AWG silicone, 120 mm, XT60 male on battery side, 5 mm tinned ends on PDB side.
+
+manufacturing:
+  ipc_class: 2
+  length_tolerance: ±5 mm
+  length_reference: from the XT60 rear face to the end of the wire
+  notes:
+    - Strip 5 mm and pre-tin the PDB ends.
+    - Fit 6 mm heat-shrink over each XT60 solder cup.
+
+connectors:
+  BATT:
+    use: power.xt60_male
+    pinlabels: [BAT+, BAT-]
+  PAD:
+    style: simple
+    type: Tinned end
+    subtype: 5 mm strip
+    ignore_in_bom: true
+
+cables:
+  W1:
+    use: wire.silicone_12awg
+    length: 120 mm
+    colors: [RD, BK]
+
+connections:
+  - - BATT: [1, 2]
+    - W1: [1, 2]
+    - PAD.
